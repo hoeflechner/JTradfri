@@ -7,10 +7,10 @@ import java.util.ArrayList;
 
 import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapResponse;
-import org.eclipse.californium.core.coap.CoAP.ResponseCode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import org.eclipse.californium.core.coap.CoAP.ResponseCode;
 import net.kappelt.JTradfri.GWConnection;
 
 /**
@@ -59,6 +59,9 @@ public class TradfriDevice{
 
 	//true if it is a bulb or a light panel
 	private Boolean isLightingDevice = false;
+	
+	//true if it is a socket outlet
+	private Boolean isOutlet = false;
 	
 	private boolean isSubscribed = false;		//set once the method subsribe() is called
 	
@@ -183,6 +186,17 @@ public class TradfriDevice{
 				this.color = json.getJSONArray("3311").getJSONObject(0).getString("5706");
 				this.isLightingDevice = true;
 			}
+			//onoff
+			if(json.has("3312") && json.getJSONArray("3312").length() > 0 && json.getJSONArray("3312").getJSONObject(0).has("5850")) {
+				this.onoff = json.getJSONArray("3312").getJSONObject(0).getInt("5850");
+				this.isOutlet = true;
+			}
+			
+			//dimvalue
+			if(json.has("3312") && json.getJSONArray("3312").length() > 0 && json.getJSONArray("3312").getJSONObject(0).has("5851")) {
+				this.dimvalue = json.getJSONArray("3312").getJSONObject(0).getInt("5851");
+				this.isOutlet = true;
+			}
 			
 			//name
 			if(json.has("9001")) {
@@ -266,6 +280,9 @@ public class TradfriDevice{
 	
 	public Boolean isLightingDevice() {
 		return isLightingDevice;
+	}
+	public Boolean isOutlet() {
+		return isOutlet;
 	}
 	
 	public int getDeviceID() {
